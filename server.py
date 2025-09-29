@@ -5,12 +5,12 @@
         server_port (int): the server's port
 
 '''
-
-import socket
 import argparse
 import sys
-import struct
 import threading
+import listener 
+from connection import Connection
+
 
 def get_args():
     '''
@@ -26,32 +26,10 @@ def get_args():
     return parser.parse_args()
 
 
-def run_server(ip,port):
-    '''
-    Run a TCP server that listens for incoming messages.
-    '''
-    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as server:
-        server.bind((ip,port))
-        server.listen()
-        print(f"Server listening on {ip}:{port}")
-        while True:
-            client = server.accept()[0]
-            t = threading.Thread(target=handle_client, args=(client,))
-            t.start()
+def handle_client(connection: Connection):
+    with connection:
+        print(connection.receive_message())
 
-
-def handle_client(client):
-    '''
-    Handle client connection.
-    '''
-    with client:
-        size_byte = client.recv(4)
-        size = struct.unpack("<I",size_byte)[0]
-        message = client.recv(size).decode('utf-8')
-        
-        print(f"Received data: {message}")
-        
-        client.close()
 
 
 def main():
@@ -59,9 +37,12 @@ def main():
     args = get_args()
 
     try:
+        with listener.Listener(args.server_ip, args.server_port) as server:
+            while True:
+                conn = server.accept()
+                t = threading.Thread(target=handle_client, args=(conn,))
+                t.start()
 
-        run_server(args.server_ip, args.server_port)
-    
     except Exception as error:
     
         print(f'ERROR: {error}')
