@@ -8,7 +8,8 @@
 import argparse
 import sys
 import threading
-import listener
+import listener 
+from connection import Connection
 def get_args():
     '''
     Parse the command line arguments.    
@@ -22,6 +23,12 @@ def get_args():
                         help='the server\'s port')
     return parser.parse_args()
 
+def handle_client(connection: Connection):
+    with connection:
+        print(connection.receive_message())
+
+
+
 def main():
     '''Implementation of CLI and running server.'''
     args = get_args()
@@ -29,11 +36,10 @@ def main():
     try:
         with listener.Listener(args.server_ip, args.server_port) as server:
             while True:
-                with server.accept() as conn:
-                    t = threading.Thread(target=conn.receive_message)
-                    t.start()
+                conn = server.accept()
+                t = threading.Thread(target=handle_client, args=(conn,))
+                t.start()
 
-                    t.join()
     except Exception as error:
     
         print(f'ERROR: {error}')

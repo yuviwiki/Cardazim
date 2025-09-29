@@ -37,7 +37,7 @@ to {self.connection.getpeername()[0]}:{self.connection.getpeername()[1]}>'
             size_byte = self.connection.recv(4)
             size = struct.unpack("<I",size_byte)[0]
             message = self.connection.recv(size).decode('utf-8')
-            print(f'Received data: {message}')
+            return message
         except socket.error as e:
             print(f"ERROR: {e}")
             return None
