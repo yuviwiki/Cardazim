@@ -11,7 +11,7 @@ import argparse
 import sys
 import struct
 import threading
-
+import listener
 def get_args():
     '''
     Parse the command line arguments.    
@@ -44,22 +44,23 @@ def handle_client(client):
     '''
     Handle client connection.
     '''
-    with client:
-        size_byte = client.recv(4)
-        size = struct.unpack("<I",size_byte)[0]
-        message = client.recv(size).decode('utf-8')
-        
-        print(f"Received data: {message}")
-        
-        client.close()
-
-
+    size_byte = client.recv(4)
+    size = struct.unpack("<I",size_byte)[0]
+    message = client.recv(size).decode('utf-8')
+    return message
 def main():
     '''Implementation of CLI and running server.'''
     args = get_args()
 
     try:
-        run_server(args.server_ip, args.server_port)
+        with listener.Listener(args.server_ip, args.server_port) as server:
+            while True:
+                with server.accept() as conn:
+                    message = conn.receive_message()
+                    if message:
+                        print(f'Received data: {message}')
+                    else:
+                        print('No data received.')
     except Exception as error:
     
         print(f'ERROR: {error}')

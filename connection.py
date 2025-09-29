@@ -5,7 +5,13 @@ class Connection:
 
 
     def __init__(self, connection: socket.socket):
-        self.connection = (connection) 
+        self.connection = connection 
+
+
+    def __repr__(self):
+        return f'<Connection from \
+{self.connection.getsockname()[0]}:{self.connection.getsockname()[1]} \
+to {self.connection.getpeername()[0]}:{self.connection.getpeername()[1]}>'
 
 
     @classmethod
@@ -25,6 +31,7 @@ class Connection:
         #creating the client socket
         self.connection.sendall(size_bytes + data)
 
+
     def receive_message(self):
         try:
             size_byte = self.connection.recv(4)
@@ -35,14 +42,18 @@ class Connection:
             print(f"ERROR: {e}")
             return None
 
+
+
     def close(self):
         try:
             self.connection.close()
         except Exception as e:
             print(f"ERROR: {e}")
 
+
     def __enter__(self):
         return self
+
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
