@@ -1,3 +1,11 @@
+'''
+    server.py - run server TCP from stdin to server
+    Args when executing script:
+        server_ip (str): the server's ip
+        server_port (int): the server's port
+
+'''
+
 import socket
 import argparse
 import sys
@@ -40,28 +48,25 @@ def handle_client(client):
         size_byte = client.recv(4)
         size = struct.unpack("<I",size_byte)[0]
         message = client.recv(size).decode('utf-8')
+        
         print(f"Received data: {message}")
+        
         client.close()
-#run with python server.py <ip> <port> use 
+
+
 def main():
-    '''
-    Implementation of CLI and sending data to server.
-    '''
+    '''Implementation of CLI and running server.'''
     args = get_args()
+
     try:
+
         run_server(args.server_ip, args.server_port)
+    
     except Exception as error:
+    
         print(f'ERROR: {error}')
         return 1
+
+
 if __name__ == '__main__':
     sys.exit(main())
-
-
-
-#flow 
-#1. get_args() -> parse the command line arguments
-#2. main() -> call get_args() and run_server()
-#3. run_server() -> create a TCP server, listen for incoming clients, for each client create new thread to handle client
-#4. handle_client() -> receive data from client, print the data, close the client connection
-#5. if __name__ == '__main__' -> call main() and exit with the return code
-
