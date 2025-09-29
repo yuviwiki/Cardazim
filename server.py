@@ -5,11 +5,8 @@
         server_port (int): the server's port
 
 '''
-
-import socket
 import argparse
 import sys
-import struct
 import threading
 import listener
 def get_args():
@@ -25,29 +22,6 @@ def get_args():
                         help='the server\'s port')
     return parser.parse_args()
 
-
-def run_server(ip,port):
-    '''
-    Run a TCP server that listens for incoming messages.
-    '''
-    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as server:
-        server.bind((ip,port))
-        server.listen()
-        print(f"Server listening on {ip}:{port}")
-        while True:
-            client = server.accept()[0]
-            t = threading.Thread(target=handle_client, args=(client,))
-            t.start()
-
-
-def handle_client(client):
-    '''
-    Handle client connection.
-    '''
-    size_byte = client.recv(4)
-    size = struct.unpack("<I",size_byte)[0]
-    message = client.recv(size).decode('utf-8')
-    return message
 def main():
     '''Implementation of CLI and running server.'''
     args = get_args()
@@ -56,11 +30,10 @@ def main():
         with listener.Listener(args.server_ip, args.server_port) as server:
             while True:
                 with server.accept() as conn:
-                    message = conn.receive_message()
-                    if message:
-                        print(f'Received data: {message}')
-                    else:
-                        print('No data received.')
+                    t = threading.Thread(target=conn.receive_message)
+                    t.start()
+
+                    t.join()
     except Exception as error:
     
         print(f'ERROR: {error}')
