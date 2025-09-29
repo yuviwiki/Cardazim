@@ -10,6 +10,8 @@ import sys
 import threading
 import listener 
 from connection import Connection
+
+
 def get_args():
     '''
     Parse the command line arguments.    
@@ -22,6 +24,7 @@ def get_args():
     parser.add_argument('server_port', type=int,
                         help='the server\'s port')
     return parser.parse_args()
+
 
 def handle_client(connection: Connection):
     with connection:

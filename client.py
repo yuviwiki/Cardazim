@@ -29,10 +29,6 @@ def get_args():
                         help='the data')
     return parser.parse_args()
 
-def handle_client(connection: Connection):
-    with connection:
-        return connection.receive_message()
-    
 
 def main():
     '''

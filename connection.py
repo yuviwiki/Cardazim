@@ -43,7 +43,6 @@ to {self.connection.getpeername()[0]}:{self.connection.getpeername()[1]}>'
             return None
 
 
-
     def close(self):
         try:
             self.connection.close()
