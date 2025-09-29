@@ -1,5 +1,10 @@
 '''
-client.py - a 
+client.py - run client TCP from stdin to server
+
+    Args in stdin:
+        server_ip (str): the server's ip
+        server_port (int): the server's port
+        data (str): message to send
 
 '''
 
