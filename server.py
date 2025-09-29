@@ -59,9 +59,7 @@ def main():
     args = get_args()
 
     try:
-
         run_server(args.server_ip, args.server_port)
-    
     except Exception as error:
     
         print(f'ERROR: {error}')
